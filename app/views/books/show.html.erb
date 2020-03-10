@@ -1,3 +1,4 @@
+
 <div class="container">
 <div class="row">
 	<div class="col-xs-3">
@@ -9,11 +10,22 @@
 		<%= render 'books/newform' %>
 
 	</div>
-
+    
 	<div class="col-xs-9">
+	<% if @book_comment.errors.any? %>
+    <div id="error_explanation" class="alert alert-danger">
+    <h2><%= @book_comment.errors.count %>errors prohibited this book from being saved:</h2>
+  <ul>
+	<% @book_comment.errors.full_messages.each do |message| %>
+	  <li><%= message %></li>
+	<% end %>
+  </ul>
+  
+</div>
+<% end %>
 		<h2>Book detail</h2>
 
-		<table class="table">
+		<table class="table table-inserve">
 				<tr>
 					<td>
 						<%= link_to (@book.user) do %>
@@ -23,13 +35,59 @@
 					</td>
 					<td><%= link_to @book.title, @book %></td>
 					<td><%= @book.body %></td>
+					<td>
+					<% if @book.favorited_by?(current_user) %>
+					
+					  <%= link_to book_favorites_path(@book), method: :delete do %>
+						<i class="glyphicon glyphicon-heart", aria-hidden="true" ></i>
+						<%= @book.favorites.count %>
+					  <% end %>
+				
+				  <% else %>
+			
+					  <%= link_to book_favorites_path(@book), method: :post do %>
+						<i class="glyphicon glyphicon-heart" aria-hidden="true"></i>
+						<%= @book.favorites.count %> 
+					  <% end %>
+			
+				  <% end %>
+				  </td>
+                 <td>
+				<div class="comment-list bt style-2" id="comments">
+					<div class="float-wrapper">
+						<p class="comment-count">コメント数：<%= @book.book_comments.count %></p>
+					</div>
+				  </td>
 					<% if current_user.id == @book.user.id %>
 					<td><%= link_to "Edit",edit_book_path(@book), class: "btn-sm btn-success edit_book_#{@book.id}" %></td>
 					<td><%= link_to "Destroy",@book, method: :delete, data: {confirm: "本当に削除してもよろしいですか？"}, class: "btn-sm btn-danger destroy_book_#{@book.id}" %></td>
 				    <% end %>
 					</tr>
 			</table>
-
+			<table>
+			<h2>User Comment</h2>
+			<% @book.book_comments.each do |book_comment| %>
+			   <tr>
+				 <td>
+				 <%= attachment_image_tag(book_comment.user, :profile_image, :fill, 100, 100, fallback: "no-image-mini.jpg") %><br>
+				 <%= book_comment.user.name %>
+				 </td>
+				 <td><%= book_comment.created_at.strftime('%Y/%m/%d') %></td>
+				 <td><%= book_comment.comment %></td>
+				 <% if current_user.id == book_comment.user.id %>
+				 <td><td><%= link_to "Destroy",book_book_comments_path(book_comment.id), method: :delete, data: {confirm: "本当に削除してもよろしいですか？"}, class: "btn-sm btn-danger destroy_book_#{@book.id}" %></td></td>
+			     <% end %>
+				 </tr>
+			<% end %>
+            </table>
+			<%= form_for [@book, @book_comment] do |f| %>
+				<div class="row">
+					<div class="col-sm-12">
+						<%= f.text_area :comment, rows:'5', class: "form-control",placeholder: "コメントをここに" %>
+					</div>
+				</div>
+				<%= f.submit "送信する", class: "btn btn-info btn-base-1 mt-20 pull-right" %>
+			<% end %>
 	</div>
 </div>
 </div>
