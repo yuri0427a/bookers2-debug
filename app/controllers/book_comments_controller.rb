@@ -7,7 +7,7 @@ class BookCommentsController < ApplicationController
             flash[:notice]="投稿できました"
             redirect_to book_path(@book_comment.book_id)
         else
-            flash[:alert] = "メッセージを入力してください"
+            flash[:notice] = "メッセージを入力してください"
             redirect_to book_path(@book_comment.book_id)
         end
     end
