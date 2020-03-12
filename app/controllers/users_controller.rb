@@ -12,8 +12,11 @@ class UsersController < ApplicationController
   def index
 	@books= Book.where(user_id: current_user.id)
   	@users = User.all #一覧表示するためにUserモデルのデータを全て変数に入れて取り出す。
-	  @book = Book.new #new bookの新規投稿で必要（保存処理はbookコントローラー側で実施）
-	  @user =current_user
+	@book = Book.new #new bookの新規投稿で必要（保存処理はbookコントローラー側で実施）
+	@user =current_user
+	@followers = @user.followers
+	@followings = @user.followings
+	# @relationship= Relationship.where(follewing_id: current_user.id)
   end
 
   def edit
@@ -31,6 +34,16 @@ class UsersController < ApplicationController
 		
   		render "edit"
   	end
+  end
+
+  def follows
+	user = User.find(params[:id])
+    @users = user.followings
+  end
+
+  def followers
+    user = User.find(params[:id])
+    @user = user.followers
   end
 
   private
